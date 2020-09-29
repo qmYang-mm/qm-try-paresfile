@@ -35,7 +35,7 @@ public class InstitutionController extends ApiController {
     private IInstitutionService institutionService;
 
     @PostMapping("batch")
-    @ApiOperation("批量导入")
+    @ApiOperation("批量导入机构")
     public Result batchExport(@RequestParam("file") MultipartFile file) throws Exception {
         List<InstitutionBaseExport> institutionBaseExports = ExcelUtils.importExcel(file,0,1, InstitutionBaseExport.class);
         return success(institutionBaseExports);
