@@ -1,0 +1,31 @@
+server:
+  port: 8072
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  profiles:
+    active: @profiles.active@
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  servlet:
+    #设置文件单次上传与请求无大小限制
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
+  # 会话的存储类型，none 表示存储在内存中， redis 表示存储在 redis 服务器
+  # 使用redis服务器能比较好的处理分布式会话和热部署的问题
+  session:
+    store-type: none
+
+mybatis-plus:
+  global-config:
+    banner: false
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-enums-package: com.quanmin.paresfile.enums
+
+
