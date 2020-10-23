@@ -46,11 +46,14 @@ public class InstitutionBaseExport implements IExcelModel, IExcelDataModel, Seri
     @Excel(name = "机构（分店名称）")
     private String instName;
 
-    @ExcelIgnore
-    private Integer instType;
+    @Excel(name = "类型（体检机构、三甲医院、分店）")
+    private String instType;
 
-    @ExcelIgnore
-    private Integer instParent;
+    @Excel(name = "父级ID")
+    private Integer instParentId;
+
+    @Excel(name = "父机构（分店请注明）")
+    private String instParent;
 
     @Excel(name = "省")
     private String province;
@@ -97,5 +100,7 @@ public class InstitutionBaseExport implements IExcelModel, IExcelDataModel, Seri
     @Excel(name = "查看报告地址URL")
     private String viewReportUrl;
 
+    @Excel(name = "处理结果")
+    private String errorFlag;
 
 }

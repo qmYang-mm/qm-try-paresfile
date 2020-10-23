@@ -1,5 +1,6 @@
 package com.quanmin.paresfile.util;
 
+import com.quanmin.paresfile.GlobalConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -21,17 +22,15 @@ import java.util.List;
 public class CSVUtils {
     //行尾分隔符定义
     private final static String NEW_LINE_SEPARATOR = "\n";
-    //上传文件的存储位置
-    private final static String PATH = "D:\\test";
 
     /**
      * @return File
      * @Description 创建CSV文件
      * @Param fileName 文件名，head 表头，values 表体
      **/
-    public static File makeTempCSV(String fileName, String[] head, List<String[]> values) throws IOException {
+    public static File makeTempCSV(String fileName, String[] head, List<Object[]> values) throws IOException {
 //        创建文件
-        File file = File.createTempFile(fileName, ".csv", new File(PATH));
+        File file = File.createTempFile(fileName, ".csv", new File(GlobalConstants.PATH));
         CSVFormat formator = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
 
         BufferedWriter bufferedWriter =
@@ -42,7 +41,7 @@ public class CSVUtils {
         printer.printRecord(head);
 
 //        写入内容
-        for (String[] value : values) {
+        for (Object[] value : values) {
             printer.printRecord(value);
         }
 
@@ -113,7 +112,7 @@ public class CSVUtils {
      * @return 返回文件
      */
     public static File uploadFile(MultipartFile multipartFile) {
-        String path = PATH + multipartFile.getOriginalFilename();
+        String path = GlobalConstants.PATH + multipartFile.getOriginalFilename();
         try {
             File file = new File(path);
             if (!file.getParentFile().exists()) {

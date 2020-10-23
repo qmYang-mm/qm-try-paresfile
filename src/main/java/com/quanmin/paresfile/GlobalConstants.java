@@ -15,4 +15,7 @@ public class GlobalConstants {
 
     public static final String SESSION_KEY = "login-user";
 
+    // 文件输出目录
+    public final static String PATH = "/excel/";
+
 }

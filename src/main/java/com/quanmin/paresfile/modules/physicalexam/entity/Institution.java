@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.quanmin.paresfile.enums.InstTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -43,7 +45,7 @@ public class Institution implements Serializable {
     private String instName;
 
     @ApiModelProperty(value = "机构类型")
-    private Integer instType;
+    private InstTypeEnum instType;
 
     @ApiModelProperty(value = "分店的父机构ID")
     private Integer instParent;

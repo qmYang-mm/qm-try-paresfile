@@ -32,7 +32,7 @@ public class CSVController extends ApiController {
 
 
         // 2. 设置CSV的值
-        List<String[]> values = new ArrayList<>();
+        List<Object[]> values = new ArrayList<>();
         String[] test = {"aa","bb"};
         values.add(test);
 
@@ -40,10 +40,10 @@ public class CSVController extends ApiController {
         String fileName = "file";
         
         File file = CSVUtils.makeTempCSV(fileName, head, values);
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("multipart/form-data");
-        response.setHeader("Content-Disposition", "attachment;fileName=" + fileName +".csv");
-        CSVUtils.downloadFile(response, file);
+//        response.setCharacterEncoding("utf-8");
+//        response.setContentType("multipart/form-data");
+//        response.setHeader("Content-Disposition", "attachment;fileName=" + fileName +".csv");
+//        CSVUtils.downloadFile(response, file);
         return success();
     }
 
