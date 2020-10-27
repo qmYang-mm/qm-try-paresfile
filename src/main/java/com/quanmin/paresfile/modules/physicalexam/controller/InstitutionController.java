@@ -11,7 +11,7 @@ import com.quanmin.paresfile.modules.physicalexam.entity.InstitutionBaseExport;
 import com.quanmin.paresfile.modules.physicalexam.service.IInstitutionService;
 import com.quanmin.paresfile.util.CSVUtils;
 import com.quanmin.paresfile.util.DateUtils;
-import com.quanmin.paresfile.util.ExcelUtils;
+import com.quanmin.paresfile.util.GKExcelUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -51,13 +51,13 @@ public class InstitutionController extends ApiController {
         // TODO:// 此接口只导入分店 转化机构类型，构建父级机构，转化地区，如果哪一行没有存储，进行标记
 
         // 1. 得到excel中的数据
-        List<InstitutionBaseExport> institutionBaseExports = ExcelUtils.importExcel(file, 0, 1, InstitutionBaseExport.class);
+        List<InstitutionBaseExport> institutionBaseExports = GKExcelUtils.importExcel(file, 0, 1, InstitutionBaseExport.class);
 
         // 注意：数据库必填字段 inst_code inst_name inst_type inst_status is_disabled created_time created_by updated_time updated_by
         // 机构必填：类型 名称
         // 分店必填：父级机构 类型 名称 省市区 地区
         // TODO://instCode应该根据情况修改
-        String institutionSeqNumber = seqNumberService.getInstitutionSeqNumber();
+        String institutionSeqNumber = "20200912000114";
         String instCodeprefix = institutionSeqNumber.substring(0, 8);
         Integer instCodeSuffix = Integer.parseInt(institutionSeqNumber.substring(8));
 
@@ -140,7 +140,7 @@ public class InstitutionController extends ApiController {
 
         // 4. 失败条数做标记
         String path = "标记没导入分店";
-        ExcelUtils.exportExcelToFile(institutionBaseExports,path,InstitutionBaseExport.class);
+        GKExcelUtils.exportExcelToFile(institutionBaseExports,path,InstitutionBaseExport.class);
         return success();
     }
 

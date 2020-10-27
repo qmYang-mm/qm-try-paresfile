@@ -116,10 +116,10 @@ public class CodeGenerator extends AutoGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://10.10.1.38:3306/cloudclinic?useUnicode=true&&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT");
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/t_test?useUnicode=true&&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT");
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("hjc");
-        dsc.setPassword("hjc");
+        dsc.setUsername("root");
+        dsc.setPassword("123456");
         mpg.setDataSource(dsc);
 
         // 包配置

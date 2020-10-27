@@ -5,22 +5,108 @@ import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
-import cn.hutool.poi.excel.ExcelUtil;
-import cn.hutool.poi.excel.ExcelWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
-public class ExcelUtils {
+/**
+ * excel 工具类
+ *
+ * @author easypoi
+ * @date 2020/02/22
+ */
+public class GKExcelUtils {
+    /**
+     * 导出excel到
+     *
+     * @param list           数据
+     * @param title          表头
+     * @param sheetName      sheetName
+     * @param pojoClass      解析的对象类型
+     * @param fileName       文件名称
+     * @param isCreateHeader 是否创建表头
+     * @return 文件路径
+     */
+    public static String exportExcelToFile(List<?> list, String title, String sheetName, Class<?> pojoClass, String fileName, boolean isCreateHeader) {
+        OutputStream out = null;
+        Workbook workbook = null;
+        try {
+            ExportParams exportParams = new ExportParams(title, sheetName, ExcelType.XSSF);
+            exportParams.setCreateHeadRows(isCreateHeader);
+            fileName = encodingFilename(fileName);
+
+            out = new FileOutputStream(getAbsoluteFile(fileName));
+
+            workbook = ExcelExportUtil.exportExcel(exportParams, pojoClass, list);
+            workbook.write(out);
+            return fileName;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            if (workbook != null) {
+                try {
+                    workbook.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * excel 导出到文件
+     *
+     * @param list      数据
+     * @param title     表头
+     * @param sheetName sheet名称
+     * @param pojoClass pojo类型
+     * @param fileName  文件名
+     * @return 文件路径
+     */
+    public static String exportExcelToFile(List<?> list, String title, String sheetName, Class<?> pojoClass, String fileName) {
+        return exportExcelToFile(list, title, sheetName, pojoClass, fileName, true);
+    }
+
+    /**
+     * excel 导出到文件
+     *
+     * @param list      数据
+     * @param title     表头
+     * @param sheetName sheet名称
+     * @param pojoClass pojo类型
+     * @return 文件路径
+     */
+    public static String exportExcelToFile(List<?> list, String title, String sheetName, Class<?> pojoClass) {
+        return exportExcelToFile(list, title, sheetName, pojoClass, title, true);
+    }
+
+    /**
+     * excel 导出到文件
+     *
+     * @param list      数据
+     * @param fileName  文件名
+     * @param pojoClass pojo类型
+     * @return 文件路径
+     */
+    public static String exportExcelToFile(List<?> list, String fileName, Class<?> pojoClass) {
+        return exportExcelToFile(list, fileName, fileName, pojoClass, fileName, true);
+    }
+
     /**
      * excel 导出
      *
@@ -49,7 +135,7 @@ public class ExcelUtils {
      * @param response
      */
     public static void exportExcel(List<?> list, String title, String sheetName, Class<?> pojoClass, String fileName, HttpServletResponse response) throws IOException {
-        defaultExport(list, pojoClass, fileName, response, new ExportParams(title, sheetName, ExcelType.HSSF));
+        defaultExport(list, pojoClass, fileName, response, new ExportParams(title, sheetName, ExcelType.XSSF));
     }
 
     /**
@@ -87,12 +173,7 @@ public class ExcelUtils {
      */
     private static void defaultExport(List<?> list, Class<?> pojoClass, String fileName, HttpServletResponse response, ExportParams exportParams) throws IOException {
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, pojoClass, list);
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader("content-Type", "application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName + "." + ExcelTypeEnum.XLS.getValue(), "UTF-8"));
-        workbook.write(response.getOutputStream());
-        workbook.close();
-        //downLoadExcel(fileName, response, workbook);
+        downLoadExcel(fileName, response, workbook);
     }
 
     /**
@@ -118,8 +199,7 @@ public class ExcelUtils {
         try {
             response.setCharacterEncoding("UTF-8");
             response.setHeader("content-Type", "application/vnd.ms-excel");
-            // response.setHeader("Content-Disposition", "attachment;filename*= UTF-8''"+URLEncoder.encode(fileName,"UTF-8"));
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName + "." + ExcelTypeEnum.XLS.getValue(), "UTF-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName + "." + ExcelTypeEnum.XLSX.getValue(), "UTF-8"));
             workbook.write(response.getOutputStream());
         } catch (Exception e) {
             throw new IOException(e.getMessage());
@@ -186,17 +266,17 @@ public class ExcelUtils {
      * @param file       上传的文件
      * @param titleRows  标题行
      * @param headerRows 表头行
-     * @param needVerfiy 是否检验excel内容
+     * @param needVerify 是否检验excel内容
      * @param pojoClass  pojo类型
      * @param <T>
      * @return
      */
-    public static <T> List<T> importExcel(MultipartFile file, Integer titleRows, Integer headerRows, boolean needVerfiy, Class<T> pojoClass) throws IOException {
+    public static <T> List<T> importExcel(MultipartFile file, Integer titleRows, Integer headerRows, boolean needVerify, Class<T> pojoClass) throws IOException {
         if (file == null) {
             return null;
         }
         try {
-            return importExcel(file.getInputStream(), titleRows, headerRows, needVerfiy, pojoClass);
+            return importExcel(file.getInputStream(), titleRows, headerRows, needVerify, pojoClass);
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
@@ -208,12 +288,12 @@ public class ExcelUtils {
      * @param inputStream 文件输入流
      * @param titleRows   标题行
      * @param headerRows  表头行
-     * @param needVerfiy  是否检验excel内容
+     * @param needVerify  是否检验excel内容
      * @param pojoClass   pojo类型
      * @param <T>
      * @return
      */
-    public static <T> List<T> importExcel(InputStream inputStream, Integer titleRows, Integer headerRows, boolean needVerfiy, Class<T> pojoClass) throws IOException {
+    public static <T> List<T> importExcel(InputStream inputStream, Integer titleRows, Integer headerRows, boolean needVerify, Class<T> pojoClass) throws IOException {
         if (inputStream == null) {
             return null;
         }
@@ -222,7 +302,7 @@ public class ExcelUtils {
         params.setHeadRows(headerRows);
         params.setSaveUrl("/excel/");
         params.setNeedSave(true);
-        params.setNeedVerify(needVerfiy);
+        params.setNeedVerify(needVerify);
         try {
             return ExcelImportUtil.importExcel(inputStream, pojoClass, params);
         } catch (NoSuchElementException e) {
@@ -230,6 +310,29 @@ public class ExcelUtils {
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
+    }
+
+
+    /**
+     * 获取下载路径
+     *
+     * @param downloadPath 文件名称
+     */
+    private static String getAbsoluteFile(String downloadPath) {
+        downloadPath = "/excel/" + downloadPath;
+        File desc = new File(downloadPath);
+        if (!desc.getParentFile().exists()) {
+            desc.getParentFile().mkdirs();
+        }
+        return downloadPath;
+    }
+
+    /**
+     * 编码文件名
+     */
+    private static String encodingFilename(String filename) {
+        filename = UUID.randomUUID().toString() + "_" + filename + "." + ExcelTypeEnum.XLSX.getValue();
+        return filename;
     }
 
     /**
@@ -245,10 +348,6 @@ public class ExcelUtils {
 
         public String getValue() {
             return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
         }
     }
 }
