@@ -59,8 +59,12 @@ public class UserTest {
     @Test
     public void testGetUserCopyStatus(){
         // 获得用户数据 -- copy
-
-
+        long startTime = System.currentTimeMillis();
+        List<UserInfo> userInfos = userInfoCopyService.getUserInfoCopyStatusList();
+        long endTime = System.currentTimeMillis();
+        long m = (endTime - startTime);
+        log.info("共计记录数：" + userInfos.size());
+        log.info("共计时间：" + m + "耗秒");
     }
 
 

@@ -57,7 +57,7 @@ public class InstitutionController extends ApiController {
         // 机构必填：类型 名称
         // 分店必填：父级机构 类型 名称 省市区 地区
         // TODO://instCode应该根据情况修改
-        String institutionSeqNumber = "20200912000114";
+        String institutionSeqNumber = "20201210000000";
         String instCodeprefix = institutionSeqNumber.substring(0, 8);
         Integer instCodeSuffix = Integer.parseInt(institutionSeqNumber.substring(8));
 

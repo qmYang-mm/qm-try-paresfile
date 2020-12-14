@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quanmin.paresfile.modules.demo.mapper.UserInfoCopyMapper">
+
+
+    <select id="getUserInfoCopyStatusList" resultType="com.quanmin.paresfile.modules.demo.entity.UserInfo">
+        SELECT
+            *
+        FROM
+            b_user_info_copy
+        <where>
+            <if test="userCopyIds != null and userCopyIds.size() != 0">
+                info_copy_id IN
+                <foreach collection="userCopyIds" index="key" item="id" open="(" separator="," close=")">
+                    ${id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="getHaveUserInfoCopy" resultType="java.lang.Integer">
+        SELECT
+            user_copy_id
+        FROM
+            b_user
+        WHERE
+            user_copy_id IS NOT NULL
+            OR user_copy_id != ''
+    </select>
+
+</mapper>

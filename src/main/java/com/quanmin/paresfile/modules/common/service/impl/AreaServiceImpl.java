@@ -3,7 +3,6 @@ package com.quanmin.paresfile.modules.common.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.quanmin.paresfile.common.exception.NormalException;
 import com.quanmin.paresfile.modules.common.entity.Area;
 import com.quanmin.paresfile.modules.common.mapper.AreaMapper;
 import com.quanmin.paresfile.modules.common.service.IAreaService;
@@ -26,7 +25,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements IA
     @Cacheable(value = "local", key = "'areaNameAndParentId-' + #name + '-' + #parentId")
     public Area getAreaLikeName(String name, Integer parentId) {
         if (parentId == null || StrUtil.isBlank(name)) {
-            throw new NormalException("参数错误！");
+            return null;
         }
         LambdaQueryWrapper<Area> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Area::getParentId, parentId)

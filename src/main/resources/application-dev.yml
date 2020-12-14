@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.10.1.38:3306/cloudclinic?useUnicode=true&characterEncodin=utf-8&useSSL=false&serverTimeout=Asia/Shanghai
+    url: jdbc:mysql://10.10.1.38:3306/cloudclinic-test?useUnicode=true&characterEncodin=utf-8&useSSL=false&serverTimeout=Asia/Shanghai
     username: hjc
     password: hjc
 
